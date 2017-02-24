@@ -33,7 +33,5 @@
     "mocha": "^3.2.0",
     "serverless": "^1.7.0"
   },
-  "peerDependencies": {
-    "serverless-offline": "*"
-  }
+  "peerDependencies": {}
 }

@@ -1,0 +1,39 @@
+{
+  "name": "serverless-offline-scheduler",
+  "version": "1.0.0-rc.4",
+  "description": "Serverless plugin to run scheduled lambdas with serverless offline",
+  "main": "index.js",
+  "author": "Andrew Matheny <andrew.j.matheny@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ajmath/serverless-offline-scheduler.git"
+  },
+  "keywords": [
+    "serverless",
+    "1.0",
+    "es6",
+    "plugin",
+    "runtime"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ajmath/serverless-offline-scheduler/issues"
+  },
+  "homepage": "https://github.com/ajmath/serverless-offline-scheduler#readme",
+  "scripts": {
+    "test": "istanbul cover _mocha tests/all -- -R spec --recursive"
+  },
+  "dependencies": {
+    "bluebird": "^3.4.0",
+    "node-schedule": "^1.2.0"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "istanbul": "^0.4.5",
+    "mocha": "^3.2.0",
+    "serverless": "^1.7.0"
+  },
+  "peerDependencies": {
+    "serverless-offline": "*"
+  }
+}

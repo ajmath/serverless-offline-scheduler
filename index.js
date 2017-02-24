@@ -18,14 +18,8 @@ class ServerlessOfflineScheduler {
       }
     };
     this.hooks = {
-      'schedule:run': () => {
-        this.serverless.cli.log('running schedule');
-        return this.scheduler.run();
-      },
-      'before:offline:start': () => {
-        this.serverless.cli.log('offline start hook');
-        return this.scheduler.run();
-      }
+      'schedule:run': () => this.scheduler.run(),
+      'offline:start:init': () => this.scheduler.run()
     };
   }
 }

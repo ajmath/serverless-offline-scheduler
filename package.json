@@ -1,6 +1,6 @@
 {
   "name": "serverless-offline-scheduler",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Serverless plugin to run scheduled lambdas with serverless offline",
   "main": "index.js",
   "author": "Andrew Matheny <andrew.j.matheny@gmail.com>",

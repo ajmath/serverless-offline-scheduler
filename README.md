@@ -12,8 +12,3 @@ plugins:
 * Your scheduled functions with cron syntax can be run with either
   * `sls schedule`
   * `sls offline start`
-
-#### Caveats ####
-
-* rate schedule expressions are not supported, only cron
-* Likely more to come!

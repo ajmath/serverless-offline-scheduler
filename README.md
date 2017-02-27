@@ -16,6 +16,4 @@ plugins:
 #### Caveats ####
 
 * rate schedule expressions are not supported, only cron
-* If using serverless-webpack, you may have to manually run `sls webpack` before
-  starting the schedule to ensure that the latest source is available
 * Likely more to come!

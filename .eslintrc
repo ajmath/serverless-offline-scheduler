@@ -1,0 +1,5 @@
+---
+  extends:
+    - walmart/configurations/es6-node
+  rules:
+    global-require: off

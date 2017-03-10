@@ -21,14 +21,20 @@
   },
   "homepage": "https://github.com/ajmath/serverless-offline-scheduler#readme",
   "scripts": {
-    "test": "istanbul cover _mocha tests/all -- -R spec --recursive"
+    "lint": "eslint index.js tests/**/*.js lib/**/*.js",
+    "mocha": "istanbul cover _mocha tests/all -- -R spec --recursive",
+    "test": "yarn run lint && yarn run mocha"
   },
   "dependencies": {
     "bluebird": "^3.4.0",
     "node-schedule": "^1.2.0"
   },
   "devDependencies": {
+    "babel-eslint": "^7.1.1",
     "chai": "^3.5.0",
+    "eslint": "^3.17.1",
+    "eslint-config-walmart": "^1.1.1",
+    "eslint-plugin-filenames": "^1.1.0",
     "istanbul": "^0.4.5",
     "mocha": "^3.2.0",
     "serverless": "^1.7.0"

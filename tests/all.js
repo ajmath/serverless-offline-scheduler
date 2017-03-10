@@ -1,5 +1,6 @@
-'use strict';
+/* eslint-env mocha */
+"use strict";
 
-describe('serverless-offline-scheduler', () => {
-  require('./scheduler.test');
+describe("serverless-offline-scheduler", () => {
+  require("./scheduler.test");
 });

@@ -21,7 +21,9 @@
   },
   "homepage": "https://github.com/ajmath/serverless-offline-scheduler#readme",
   "scripts": {
-    "test": "istanbul cover _mocha tests/all -- -R spec --recursive"
+    "lint": "eslint index.js tests/**/*.js lib/**/*.js",
+    "mocha": "istanbul cover _mocha tests/all -- -R spec --recursive",
+    "test": "yarn run lint && yarn run mocha"
   },
   "dependencies": {
     "bluebird": "^3.4.0",

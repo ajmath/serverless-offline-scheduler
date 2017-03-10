@@ -3,3 +3,5 @@
     - walmart/configurations/es6-node
   rules:
     global-require: off
+    max-params: off
+    max-statements: off

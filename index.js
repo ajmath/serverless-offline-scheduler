@@ -17,7 +17,7 @@ class ServerlessOfflineScheduler {
     };
     this.hooks = {
       "schedule:run": () => this.scheduler.run(),
-      "after:offline:start:init": () => this.scheduler.run()
+      "before:offline:start:init": () => this.scheduler.run()
     };
   }
 }

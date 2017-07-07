@@ -45,7 +45,7 @@ describe("validate", () => {
     expect(result).to.eql("1/* * * * *");
 
     result = module._convertExpressionToCron("cron(15 10 ? * 6L 2002-2005)");
-    expect(result).to.eql("15 10 ? * 6L 2002-2005");
+    expect(result).to.eql("15 10 ? * 6L");
   });
 
   it("should parse cron from object syntax", () => {

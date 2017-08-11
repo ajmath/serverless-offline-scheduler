@@ -126,7 +126,7 @@ describe("validate", () => {
 
     const event2 = funcs[1].events[0];
     expect(event2).to.have.property("name").that.equals("scheduled2");
-    expect(event2).to.have.property("enabled").that.equals(true);
+    expect(event2).to.have.property("enabled").that.equals(false);
     expect(event2).to.have.property("cron").that.equals("0 */2 * * *");
 
     const event3 = funcs[1].events[1];

@@ -126,12 +126,40 @@ describe("validate", () => {
 
     const event2 = funcs[1].events[0];
     expect(event2).to.have.property("name").that.equals("scheduled2");
-    expect(event2).to.have.property("enabled").that.equals(true);
+    expect(event2).to.have.property("enabled").that.equals(false);
     expect(event2).to.have.property("cron").that.equals("0 */2 * * *");
 
     const event3 = funcs[1].events[1];
     expect(event3).to.have.property("name").that.equals("scheduled2");
     expect(event3).to.have.property("enabled").that.equals(true);
     expect(event3).to.have.property("cron").that.equals("1/* * * * *");
+  });
+
+  it("should load functions with schedule events", () => {
+    module.serverless.service.functions = {
+      scheduled1: {
+        handler: "handler.test1",
+        events: [{
+          schedule: {
+            rate: "cron(1/* * * * *)",
+            input: {
+              key1: "value1"
+            }
+          }
+        }]
+      }
+    };
+
+    const funcs = module._getFuncConfigs();
+
+    expect(funcs[0]).to.have.property("id").that.equals("scheduled1");
+    expect(funcs[0]).to.have.property("events");
+
+    expect(funcs[0].events).to.have.lengthOf(1);
+
+    const event = funcs[0].events[0];
+    expect(event).to.have.property("cron").that.equals("1/* * * * *");
+    expect(event).to.have.property("input");
+    expect(event.input).to.have.property("key1").that.equals("value1");
   });
 });

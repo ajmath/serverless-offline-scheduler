@@ -7,6 +7,8 @@ const expect = chai.expect;
 
 const Scheduler = require("../lib/scheduler");
 
+const msPerSecond = 1000;
+
 describe("validate", () => {
   let module;
   let serverless;
@@ -161,5 +163,28 @@ describe("validate", () => {
     expect(event).to.have.property("cron").that.equals("1/* * * * *");
     expect(event).to.have.property("input");
     expect(event.input).to.have.property("key1").that.equals("value1");
+  });
+
+  it("should correctly", () => {
+
+    const timeout = 45; // secs
+    const maxDuration = 2; // msecs
+
+    module.serverless.service.functions = {
+      scheduled1: {
+        handler: "handler.test1",
+        timeout,
+        events: [{
+          schedule: {
+            rate: "cron(1/* * * * *)"
+          }
+        }]
+      }
+    };
+
+    const funcs = module._getFuncConfigs();
+    const context = module._getContext(funcs[0]);
+    expect(context.getRemainingTimeInMillis()).to.be.at.most(timeout * msPerSecond);
+    expect(context.getRemainingTimeInMillis()).to.be.at.least(timeout * msPerSecond - maxDuration);
   });
 });

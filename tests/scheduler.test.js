@@ -7,6 +7,8 @@ const expect = chai.expect;
 
 const Scheduler = require("../lib/scheduler");
 
+const MS_PER_SEC = 1000;
+
 describe("validate", () => {
   let module;
   let serverless;
@@ -161,5 +163,73 @@ describe("validate", () => {
     expect(event).to.have.property("cron").that.equals("1/* * * * *");
     expect(event).to.have.property("input");
     expect(event.input).to.have.property("key1").that.equals("value1");
+  });
+
+  it("should use the *function* timeout for getRemainingTimeInMillis", () => {
+
+    const timeout = 45; // secs
+    const maxDuration = 2; // msecs
+
+    module.serverless.service.functions = {
+      scheduled1: {
+        handler: "handler.test1",
+        timeout,
+        events: [{
+          schedule: {
+            rate: "cron(1/* * * * *)"
+          }
+        }]
+      }
+    };
+
+    const funcs = module._getFuncConfigs();
+    const context = module._getContext(funcs[0]);
+    expect(context.getRemainingTimeInMillis()).to.be.at.most(timeout * MS_PER_SEC);
+    expect(context.getRemainingTimeInMillis()).to.be.at.least(timeout * MS_PER_SEC - maxDuration);
+  });
+
+  it("should use the *provider* timeout for getRemainingTimeInMillis", () => {
+
+    const timeout = 35; // secs
+    const maxDuration = 2; // msecs
+
+    module.serverless.service.provider.timeout = timeout;
+    module.serverless.service.functions = {
+      scheduled1: {
+        handler: "handler.test1",
+        events: [{
+          schedule: {
+            rate: "cron(1/* * * * *)"
+          }
+        }]
+      }
+    };
+
+    const funcs = module._getFuncConfigs();
+    const context = module._getContext(funcs[0]);
+    expect(context.getRemainingTimeInMillis()).to.be.at.most(timeout * MS_PER_SEC);
+    expect(context.getRemainingTimeInMillis()).to.be.at.least(timeout * MS_PER_SEC - maxDuration);
+  });
+
+  it("should use the *default* timeout for getRemainingTimeInMillis", () => {
+
+    const timeout = 6; // secs
+    const maxDuration = 2; // msecs
+
+    module.serverless.service.functions = {
+      scheduled1: {
+        handler: "handler.test1",
+        events: [{
+          schedule: {
+            rate: "cron(1/* * * * *)"
+          }
+        }]
+      }
+    };
+
+    const funcs = module._getFuncConfigs();
+    const context = module._getContext(funcs[0]);
+    expect(context.getRemainingTimeInMillis()).to.be.at.most(timeout * MS_PER_SEC);
+    expect(context.getRemainingTimeInMillis()).to.be.at.least(timeout * MS_PER_SEC - maxDuration);
   });
 });

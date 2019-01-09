@@ -55,6 +55,7 @@ describe("validate", () => {
 
     expect(toCron({ rate: "rate(10 minutes)", enabled: true })).to.eql({
       name: "my-job",
+      ruleName: "my-schedule",
       cron: "*/10 * * * *",
       enabled: true
     });
@@ -130,6 +131,7 @@ describe("validate", () => {
     expect(event2).to.have.property("name").that.equals("scheduled2");
     expect(event2).to.have.property("enabled").that.equals(false);
     expect(event2).to.have.property("cron").that.equals("0 */2 * * *");
+    expect(event2).to.have.property("ruleName").that.equals("custom-name");
 
     const event3 = funcs[1].events[1];
     expect(event3).to.have.property("name").that.equals("scheduled2");

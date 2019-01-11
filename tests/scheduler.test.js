@@ -55,7 +55,7 @@ describe("validate", () => {
 
     expect(toCron({ rate: "rate(10 minutes)", enabled: true })).to.eql({
       name: "my-job",
-      ruleName: "my-schedule",
+      ruleName: "my-job",
       cron: "*/10 * * * *",
       enabled: true
     });

@@ -27,7 +27,8 @@
   },
   "dependencies": {
     "bluebird": "^3.4.0",
-    "node-schedule": "^1.2.0"
+    "node-schedule": "^1.2.0",
+    "sinon": "^7.3.2"
   },
   "devDependencies": {
     "babel-eslint": "^7.1.1",

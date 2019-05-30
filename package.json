@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "bluebird": "^3.4.0",
-    "node-schedule": "^1.2.0"
+    "cron": "^1.7.1"
   },
   "devDependencies": {
     "babel-eslint": "^7.1.1",
@@ -36,8 +36,7 @@
     "eslint-config-walmart": "^1.1.1",
     "eslint-plugin-filenames": "^1.1.0",
     "istanbul": "^0.4.5",
-    "mocha": "^3.2.0",
-    "serverless": "^1.7.0"
+    "mocha": "^3.2.0"
   },
   "peerDependencies": {}
 }

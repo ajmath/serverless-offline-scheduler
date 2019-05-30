@@ -2,7 +2,8 @@
 /* eslint-env mocha */
 
 const chai = require("chai");
-const Serverless = require("serverless");
+// const Serverless = require("serverless");
+const ServerlessBuilder = require("./support/ServerlessBuilder");
 const expect = chai.expect;
 
 const Scheduler = require("../lib/scheduler");
@@ -14,11 +15,8 @@ describe("validate", () => {
   let serverless;
 
   beforeEach(() => {
-    serverless = new Serverless();
-    serverless.cli = {
-      log: () => { }
-    };
-    module = new Scheduler(serverless);
+    serverless = new ServerlessBuilder();
+    module = new Scheduler(serverless.toObject());
   });
 
   it("should expose a `run` method", () => {
@@ -29,12 +27,14 @@ describe("validate", () => {
     module.serverless.service.functions = {
       http1: {
         handler: "handler.js",
-        events: [{
-          http: {
-            method: "get",
-            path: "test/path"
+        events: [
+          {
+            http: {
+              method: "get",
+              path: "test/path"
+            }
           }
-        }]
+        ]
       }
     };
 
@@ -87,9 +87,11 @@ describe("validate", () => {
     module.serverless.service.functions = {
       scheduled1: {
         handler: "handler.test1",
-        events: [{
-          schedule: "cron(1/* * * * *)"
-        }]
+        events: [
+          {
+            schedule: "cron(1/* * * * *)"
+          }
+        ]
       },
       scheduled2: {
         handler: "handler.test2",
@@ -108,67 +110,98 @@ describe("validate", () => {
       },
       http: {
         handler: "handler.web",
-        events: [{
-          http: { method: "get", path: "path/123" }
-        }]
+        events: [
+          {
+            http: { method: "get", path: "path/123" }
+          }
+        ]
       }
     };
 
     const funcs = module._getFuncConfigs();
     const expectedLength = 2;
     expect(funcs).to.have.lengthOf(expectedLength);
-    expect(funcs[0]).to.have.property("id").that.equals("scheduled1");
+    expect(funcs[0])
+      .to.have.property("id")
+      .that.equals("scheduled1");
     expect(funcs[0]).to.have.property("events");
 
     const event1 = funcs[0].events[0];
-    expect(event1).to.have.property("name").that.equals("scheduled1");
-    expect(event1).to.have.property("enabled").that.equals(true);
-    expect(event1).to.have.property("cron").that.equals("1/* * * * *");
+    expect(event1)
+      .to.have.property("name")
+      .that.equals("scheduled1");
+    expect(event1)
+      .to.have.property("enabled")
+      .that.equals(true);
+    expect(event1)
+      .to.have.property("cron")
+      .that.equals("1/* * * * *");
 
     expect(funcs[1].events).to.have.lengthOf(expectedLength);
 
     const event2 = funcs[1].events[0];
-    expect(event2).to.have.property("name").that.equals("scheduled2");
-    expect(event2).to.have.property("enabled").that.equals(false);
-    expect(event2).to.have.property("cron").that.equals("0 */2 * * *");
-    expect(event2).to.have.property("ruleName").that.equals("custom-name");
+    expect(event2)
+      .to.have.property("name")
+      .that.equals("scheduled2");
+    expect(event2)
+      .to.have.property("enabled")
+      .that.equals(false);
+    expect(event2)
+      .to.have.property("cron")
+      .that.equals("0 */2 * * *");
+    expect(event2)
+      .to.have.property("ruleName")
+      .that.equals("custom-name");
 
     const event3 = funcs[1].events[1];
-    expect(event3).to.have.property("name").that.equals("scheduled2");
-    expect(event3).to.have.property("enabled").that.equals(true);
-    expect(event3).to.have.property("cron").that.equals("1/* * * * *");
+    expect(event3)
+      .to.have.property("name")
+      .that.equals("scheduled2");
+    expect(event3)
+      .to.have.property("enabled")
+      .that.equals(true);
+    expect(event3)
+      .to.have.property("cron")
+      .that.equals("1/* * * * *");
   });
 
   it("should load functions with schedule events", () => {
     module.serverless.service.functions = {
       scheduled1: {
         handler: "handler.test1",
-        events: [{
-          schedule: {
-            rate: "cron(1/* * * * *)",
-            input: {
-              key1: "value1"
+        events: [
+          {
+            schedule: {
+              rate: "cron(1/* * * * *)",
+              input: {
+                key1: "value1"
+              }
             }
           }
-        }]
+        ]
       }
     };
 
     const funcs = module._getFuncConfigs();
 
-    expect(funcs[0]).to.have.property("id").that.equals("scheduled1");
+    expect(funcs[0])
+      .to.have.property("id")
+      .that.equals("scheduled1");
     expect(funcs[0]).to.have.property("events");
 
     expect(funcs[0].events).to.have.lengthOf(1);
 
     const event = funcs[0].events[0];
-    expect(event).to.have.property("cron").that.equals("1/* * * * *");
+    expect(event)
+      .to.have.property("cron")
+      .that.equals("1/* * * * *");
     expect(event).to.have.property("input");
-    expect(event.input).to.have.property("key1").that.equals("value1");
+    expect(event.input)
+      .to.have.property("key1")
+      .that.equals("value1");
   });
 
   it("should use the *function* timeout for getRemainingTimeInMillis", () => {
-
     const timeout = 45; // secs
     const maxDuration = 2; // msecs
 
@@ -176,11 +209,13 @@ describe("validate", () => {
       scheduled1: {
         handler: "handler.test1",
         timeout,
-        events: [{
-          schedule: {
-            rate: "cron(1/* * * * *)"
+        events: [
+          {
+            schedule: {
+              rate: "cron(1/* * * * *)"
+            }
           }
-        }]
+        ]
       }
     };
 
@@ -191,7 +226,6 @@ describe("validate", () => {
   });
 
   it("should use the *provider* timeout for getRemainingTimeInMillis", () => {
-
     const timeout = 35; // secs
     const maxDuration = 2; // msecs
 
@@ -199,11 +233,13 @@ describe("validate", () => {
     module.serverless.service.functions = {
       scheduled1: {
         handler: "handler.test1",
-        events: [{
-          schedule: {
-            rate: "cron(1/* * * * *)"
+        events: [
+          {
+            schedule: {
+              rate: "cron(1/* * * * *)"
+            }
           }
-        }]
+        ]
       }
     };
 
@@ -214,18 +250,19 @@ describe("validate", () => {
   });
 
   it("should use the *default* timeout for getRemainingTimeInMillis", () => {
-
     const timeout = 6; // secs
     const maxDuration = 2; // msecs
 
     module.serverless.service.functions = {
       scheduled1: {
         handler: "handler.test1",
-        events: [{
-          schedule: {
-            rate: "cron(1/* * * * *)"
+        events: [
+          {
+            schedule: {
+              rate: "cron(1/* * * * *)"
+            }
           }
-        }]
+        ]
       }
     };
 

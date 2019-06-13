@@ -6,21 +6,30 @@ const Serverless = require("serverless");
 const expect = chai.expect;
 
 const Scheduler = require("../lib/scheduler");
+const sinon = require("sinon");
+const BbPromise = require("bluebird");
+const childProcess = BbPromise.promisifyAll(require("child_process"));
 
 const MS_PER_SEC = 1000;
 
 describe("validate", () => {
   let module;
   let serverless;
+  let execFunction;
 
   beforeEach(() => {
     serverless = new Serverless();
     serverless.cli = {
       log: () => { }
     };
+    execFunction = sinon.stub(childProcess, "execSync")
+        .returns(BbPromise.resolve());
     module = new Scheduler(serverless);
   });
 
+  afterEach(() => {
+    childProcess.execSync.restore();
+  });
   it("should expose a `run` method", () => {
     expect(module.run).to.be.a("function");
   });
@@ -165,6 +174,40 @@ describe("validate", () => {
     expect(event).to.have.property("cron").that.equals("1/* * * * *");
     expect(event).to.have.property("input");
     expect(event.input).to.have.property("key1").that.equals("value1");
+  });
+
+  it("should run function with schedule events and inputf", () => {
+    module.serverless.service.functions = {
+      scheduled1: {
+        handler: "handler.test1",
+        events: [{
+          schedule: {
+            rate: "cron(1/* * * * *)",
+            input: {
+              key1: "value1"
+            }
+          }
+        }]
+      }
+    };
+
+    const funcs = module._getFuncConfigs();
+
+    expect(funcs[0]).to.have.property("id").that.equals("scheduled1");
+    expect(funcs[0]).to.have.property("events");
+
+    expect(funcs[0].events).to.have.lengthOf(1);
+
+    const event = funcs[0].events[0];
+    module._executeFunction(funcs[0].id, event.input);
+
+    expect(event).to.have.property("cron").that.equals("1/* * * * *");
+    expect(event).to.have.property("input");
+    expect(event.input).to.have.property("key1").that.equals("value1");
+    expect(execFunction.calledWithExactly(
+      `serverless invoke local --function ${funcs[0].id} --data ${JSON.stringify(event.input)}`,
+       {cwd: "./", stdio: "inherit" }
+      )).to.equal(true);
   });
 
   it("should use the *function* timeout for getRemainingTimeInMillis", () => {

@@ -197,11 +197,15 @@ describe("validate", () => {
     };
 
     const funcs = module._getFuncConfigs();
+
     expect(funcs[0]).to.have.property("id").that.equals("scheduled1");
     expect(funcs[0]).to.have.property("events");
+
     expect(funcs[0].events).to.have.lengthOf(1);
+
     const event = funcs[0].events[0];
     module._executeFunction(funcs[0].id, event.input);
+
     expect(event).to.have.property("cron").that.equals("1/* * * * *");
     expect(event).to.have.property("input");
     expect(event.input).to.have.property("key1").that.equals("value1");
@@ -211,6 +215,7 @@ describe("validate", () => {
       { cwd: "./", stdio: "inherit" }
     )).to.equal(true);
   });
+
   it("shuold run the function without input and options", () => {
     module.serverless.service.functions = {
       scheduled1: {

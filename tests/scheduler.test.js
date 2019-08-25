@@ -23,7 +23,7 @@ describe("validate", () => {
       log: () => { }
     };
     execFunction = sinon.stub(childProcess, "execSync")
-        .returns(BbPromise.resolve());
+      .returns(BbPromise.resolve());
     module = new Scheduler(serverless);
   });
 
@@ -190,24 +190,26 @@ describe("validate", () => {
         }]
       }
     };
+    module.serverless.processedInput = {
+      options: {
+        key2: "value2"
+      }
+    };
 
     const funcs = module._getFuncConfigs();
-
     expect(funcs[0]).to.have.property("id").that.equals("scheduled1");
     expect(funcs[0]).to.have.property("events");
-
     expect(funcs[0].events).to.have.lengthOf(1);
-
     const event = funcs[0].events[0];
     module._executeFunction(funcs[0].id, event.input);
-
     expect(event).to.have.property("cron").that.equals("1/* * * * *");
     expect(event).to.have.property("input");
     expect(event.input).to.have.property("key1").that.equals("value1");
     expect(execFunction.calledWithExactly(
-      `serverless invoke local --function ${funcs[0].id} --data ${JSON.stringify(event.input)}`,
-       {cwd: "./", stdio: "inherit" }
-      )).to.equal(true);
+      `serverless invoke local --function ${funcs[0].id} --data ${JSON.stringify(event.input)}` +
+      " --key2 value2",
+      { cwd: "./", stdio: "inherit" }
+    )).to.equal(true);
   });
 
   it("should use the *function* timeout for getRemainingTimeInMillis", () => {

@@ -15,7 +15,7 @@ const MS_PER_SEC = 1000;
 describe("validate", () => {
   let module;
   let serverless;
-  let execFunction;
+  //let execFunction;
 
   beforeEach(() => {
     serverless = new Serverless();

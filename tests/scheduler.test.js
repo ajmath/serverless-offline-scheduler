@@ -216,26 +216,26 @@ describe("validate", () => {
     )).to.equal(true);
   });
 
-  // it("shuold run the function without input and options", () => {
-  //   module.serverless.service.functions = {
-  //     scheduled1: {
-  //       handler: "handler.test1",
-  //       events: [{
-  //         schedule: {
-  //           rate: "cron(1/* * * * *)"
-  //         }
-  //       }]
-  //     }
-  //   };
-  //   const funcs = module._getFuncConfigs();
-  //   const event = funcs[0].events[0];
-  //   module._executeFunction(funcs[0].id, event.input);
-  //   expect(event).to.not.have.property("input");
-  //   expect(execFunction.calledWithExactly(
-  //     `serverless invoke local --function ${funcs[0].id}`,
-  //     { cwd: "./", stdio: "inherit" }
-  //   )).to.equal(true);
-  // });
+  it("shuold run the function without input and options", () => {
+    module.serverless.service.functions = {
+      scheduled1: {
+        handler: "handler.test1",
+        events: [{
+          schedule: {
+            rate: "cron(1/* * * * *)"
+          }
+        }]
+      }
+    };
+    const funcs = module._getFuncConfigs();
+    const event = funcs[0].events[0];
+    module._executeFunction(funcs[0].id, event.input);
+    expect(event).to.not.have.property("input");
+    expect(execFunction.calledWithExactly(
+      `serverless invoke local --function ${funcs[0].id}`,
+      { cwd: "./", stdio: "inherit" }
+    )).to.equal(true);
+  });
   it("should use the *function* timeout for getRemainingTimeInMillis", () => {
 
     const timeout = 45; // secs

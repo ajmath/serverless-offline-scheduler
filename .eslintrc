@@ -5,3 +5,4 @@
     global-require: off
     max-params: off
     max-statements: off
+    no-console: off

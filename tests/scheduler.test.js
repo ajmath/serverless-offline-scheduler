@@ -19,6 +19,7 @@ describe("validate", () => {
       log: () => { }
     };
     module = new Scheduler(serverless);
+    jest.clearAllMocks();
   });
 
   it("should expose a `run` method", () => {
@@ -203,6 +204,54 @@ describe("validate", () => {
         funcs[0].id,
         "--data",
         JSON.stringify(event.input),
+      ],
+      {cwd: "./", stdio: "inherit" }
+    );
+  });
+
+  it("should run function with schedule events, input, and cli options", () => {
+    module.serverless.service.functions = {
+      scheduled1: {
+        handler: "handler.test1",
+        events: [{
+          schedule: {
+            rate: "cron(1/* * * * *)",
+            input: {
+              key1: "value1"
+            }
+          }
+        }]
+      }
+    };
+    module.serverless.processedInput = {
+      options: {
+        option1: "value2"
+      }
+    };
+
+    const funcs = module._getFuncConfigs();
+
+    expect(funcs[0].id).toEqual("scheduled1");
+    expect(Array.isArray(funcs[0].events)).toEqual(true);
+    expect(funcs[0].events).toHaveLength(1);
+
+    const event = funcs[0].events[0];
+    module._executeFunction(funcs[0].id, event.input);
+
+    expect(event.cron).toEqual("1/* * * * *");
+    expect(event.input.key1).toEqual("value1");
+    expect(childProcess.execFileSync).toBeCalledWith(
+      process.argv[0],
+      [
+        process.argv[1],
+        "invoke",
+        "local",
+        "--function",
+        funcs[0].id,
+        "--data",
+        JSON.stringify(event.input),
+        "--option1",
+        "value2"
       ],
       {cwd: "./", stdio: "inherit" }
     );

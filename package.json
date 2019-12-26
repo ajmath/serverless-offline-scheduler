@@ -1,6 +1,6 @@
 {
   "name": "serverless-offline-scheduler",
-  "version": "0.3.7",
+  "version": "0.3.8",
   "description": "Serverless plugin to run scheduled lambdas with serverless offline",
   "main": "index.js",
   "author": "Andrew Matheny <andrew.j.matheny@gmail.com>",
@@ -22,21 +22,15 @@
   "homepage": "https://github.com/ajmath/serverless-offline-scheduler#readme",
   "scripts": {
     "lint": "eslint index.js tests/**/*.js lib/**/*.js",
-    "mocha": "istanbul cover _mocha tests/all -- -R spec --recursive",
-    "test": "yarn run lint && yarn run mocha"
+    "test": "yarn run lint && yarn run jest"
   },
   "dependencies": {
-    "bluebird": "^3.4.0",
-    "cron": "^1.7.1"
+    "node-schedule": "^1.2.0"
   },
   "devDependencies": {
-    "babel-eslint": "^7.1.1",
-    "chai": "^3.5.0",
-    "eslint": "^3.17.1",
-    "eslint-config-walmart": "^1.1.1",
-    "eslint-plugin-filenames": "^1.1.0",
-    "istanbul": "^0.4.5",
-    "mocha": "^3.2.0"
+    "eslint": "^6.8.0",
+    "jest": "^24.9.0",
+    "serverless": "^1.60.4"
   },
   "peerDependencies": {}
 }

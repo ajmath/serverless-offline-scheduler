@@ -30,12 +30,14 @@ describe("validate", () => {
     module.serverless.service.functions = {
       http1: {
         handler: "handler.js",
-        events: [{
-          http: {
-            method: "get",
-            path: "test/path"
+        events: [
+          {
+            http: {
+              method: "get",
+              path: "test/path"
+            }
           }
-        }]
+        ]
       }
     };
 
@@ -88,9 +90,11 @@ describe("validate", () => {
     module.serverless.service.functions = {
       scheduled1: {
         handler: "handler.test1",
-        events: [{
-          schedule: "cron(1/* * * * *)"
-        }]
+        events: [
+          {
+            schedule: "cron(1/* * * * *)"
+          }
+        ]
       },
       scheduled2: {
         handler: "handler.test2",
@@ -109,9 +113,11 @@ describe("validate", () => {
       },
       http: {
         handler: "handler.web",
-        events: [{
-          http: { method: "get", path: "path/123" }
-        }]
+        events: [
+          {
+            http: { method: "get", path: "path/123" }
+          }
+        ]
       }
     };
 
@@ -144,14 +150,16 @@ describe("validate", () => {
     module.serverless.service.functions = {
       scheduled1: {
         handler: "handler.test1",
-        events: [{
-          schedule: {
-            rate: "cron(1/* * * * *)",
-            input: {
-              key1: "value1"
+        events: [
+          {
+            schedule: {
+              rate: "cron(1/* * * * *)",
+              input: {
+                key1: "value1"
+              }
             }
           }
-        }]
+        ]
       }
     };
 
@@ -258,7 +266,6 @@ describe("validate", () => {
   });
 
   it("should use the *function* timeout for getRemainingTimeInMillis", () => {
-
     const timeout = 45; // secs
     const maxDuration = 2; // msecs
 
@@ -266,11 +273,13 @@ describe("validate", () => {
       scheduled1: {
         handler: "handler.test1",
         timeout,
-        events: [{
-          schedule: {
-            rate: "cron(1/* * * * *)"
+        events: [
+          {
+            schedule: {
+              rate: "cron(1/* * * * *)"
+            }
           }
-        }]
+        ]
       }
     };
 
@@ -281,7 +290,6 @@ describe("validate", () => {
   });
 
   it("should use the *provider* timeout for getRemainingTimeInMillis", () => {
-
     const timeout = 35; // secs
     const maxDuration = 2; // msecs
 
@@ -289,11 +297,13 @@ describe("validate", () => {
     module.serverless.service.functions = {
       scheduled1: {
         handler: "handler.test1",
-        events: [{
-          schedule: {
-            rate: "cron(1/* * * * *)"
+        events: [
+          {
+            schedule: {
+              rate: "cron(1/* * * * *)"
+            }
           }
-        }]
+        ]
       }
     };
 
@@ -304,18 +314,19 @@ describe("validate", () => {
   });
 
   it("should use the *default* timeout for getRemainingTimeInMillis", () => {
-
     const timeout = 6; // secs
     const maxDuration = 2; // msecs
 
     module.serverless.service.functions = {
       scheduled1: {
         handler: "handler.test1",
-        events: [{
-          schedule: {
-            rate: "cron(1/* * * * *)"
+        events: [
+          {
+            schedule: {
+              rate: "cron(1/* * * * *)"
+            }
           }
-        }]
+        ]
       }
     };
 

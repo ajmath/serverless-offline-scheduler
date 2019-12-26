@@ -193,8 +193,17 @@ describe("validate", () => {
 
     expect(event.cron).toEqual("1/* * * * *");
     expect(event.input.key1).toEqual("value1");
-    expect(childProcess.execSync).toBeCalledWith(
-      `serverless invoke local --function ${funcs[0].id} --data ${JSON.stringify(event.input)}`,
+    expect(childProcess.execFileSync).toBeCalledWith(
+      process.argv[0],
+      [
+        process.argv[1],
+        "invoke",
+        "local",
+        "--function",
+        funcs[0].id,
+        "--data",
+        JSON.stringify(event.input),
+      ],
       {cwd: "./", stdio: "inherit" }
     );
   });

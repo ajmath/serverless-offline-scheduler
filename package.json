@@ -32,5 +32,9 @@
     "jest": "^24.9.0",
     "serverless": "^1.60.4"
   },
-  "peerDependencies": {}
+  "peerDependencies": {},
+  "resolutions": {
+    "**/deep-extend": "~0.6.0",
+    "**/lodash": "~4.17.15"
+  }
 }

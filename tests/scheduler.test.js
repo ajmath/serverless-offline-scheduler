@@ -55,13 +55,27 @@ describe("validate", () => {
 
   it("should parse cron from object syntax", () => {
     const toCron = (s) => module._parseScheduleObject("my-job", s);
-
-    expect(toCron({ rate: "rate(10 minutes)", enabled: true })).toEqual({
-      name: "my-job",
-      ruleName: "my-job",
-      cron: "*/10 * * * *",
-      enabled: true
-    });
+    const result = toCron({ rate: "rate(10 minutes)", enabled: true });
+    expect(result).toEqual(
+      expect.objectContaining({
+        name: "my-job",
+        ruleName: "my-job",
+        cron: "*/10 * * * *",
+        enabled: true,
+        input: expect.objectContaining({
+          account: "123456789012",
+          detail: {},
+          "detail-type": "Scheduled Event",
+          isOffline: true,
+          region: "serverless-offline",
+          resources: [
+            "arn:aws:events:serverless-offline:123456789012:rule/my-job"
+          ],
+          source: "aws.events",
+          stageVariables: undefined
+        })
+      })
+    );
   });
 
   it("should parse cron from rate event expression", () => {
@@ -262,6 +276,45 @@ describe("validate", () => {
         "value2"
       ],
       {cwd: "./", stdio: "inherit" }
+    );
+  });
+
+  it("should run function with schedule events, no input", () => {
+    module.serverless.service.functions = {
+      scheduled1: {
+        handler: "handler.test1",
+        events: [
+          {
+            schedule: {
+              rate: "cron(1/* * * * *)"
+            }
+          }
+        ]
+      }
+    };
+
+    const funcs = module._getFuncConfigs();
+
+    expect(funcs[0].id).toEqual("scheduled1");
+    expect(Array.isArray(funcs[0].events)).toEqual(true);
+    expect(funcs[0].events).toHaveLength(1);
+
+    const event = funcs[0].events[0];
+    module._executeFunction(funcs[0].id, event.input);
+
+    expect(event.cron).toEqual("1/* * * * *");
+    expect(childProcess.execFileSync).toBeCalledWith(
+      process.argv[0],
+      [
+        process.argv[1],
+        "invoke",
+        "local",
+        "--function",
+        funcs[0].id,
+        "--data",
+        JSON.stringify(event.input)
+      ],
+      { cwd: "./", stdio: "inherit" }
     );
   });
 

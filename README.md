@@ -1,3 +1,5 @@
+# THIS PROJECT IS NOT MAINTAINED
+
 # serverless-offline-scheduler
 
 [![npm version](https://badge.fury.io/js/serverless-offline-scheduler.svg)](https://www.npmjs.com/package/serverless-offline-scheduler)

@@ -16,7 +16,8 @@ class ServerlessOfflineScheduler {
             usage:
               "run scheduled functions immediately in addition to defined interval" +
               "(e.g \"--runSchedulesOnInit\")",
-            required: false
+            required: false,
+            type: "boolean"
           }
         }
       }

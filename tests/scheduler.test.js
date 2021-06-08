@@ -1,13 +1,12 @@
 "use strict";
 /* eslint-env mocha */
-
-const childProcess = require("child_process");
+const testHandler = require('./test-handler')
 const Serverless = require("serverless");
 const Scheduler = require("../lib/scheduler");
 
 const MS_PER_SEC = 1000;
 
-jest.mock("child_process");
+jest.mock('./test-handler');
 
 describe("validate", () => {
   let module;
@@ -212,22 +211,23 @@ describe("validate", () => {
     expect(funcs[0].events).toHaveLength(1);
 
     const event = funcs[0].events[0];
-    module._executeFunction(funcs[0].id, event.input);
+    module._buildModulePath = () => '../tests/test-handler';
+    module._executeFunction(funcs[0].id, funcs[0].moduleName, funcs[0].handlerFunction, funcs[0].timeout, event.input);
 
     expect(event.cron).toEqual("1/* * * * *");
     expect(event.input.key1).toEqual("value1");
-    expect(childProcess.execFileSync).toBeCalledWith(
-      process.argv[0],
-      [
-        process.argv[1],
-        "invoke",
-        "local",
-        "--function",
-        funcs[0].id,
-        "--data",
-        JSON.stringify(event.input),
-      ],
-      {cwd: "./", stdio: "inherit" }
+    expect(testHandler.test1).toBeCalledWith(
+        event.input,
+        expect.objectContaining({
+            callbackWaitsForEmptyEventLoop: true,
+            functionName: funcs[0].id,
+            functionVersion: "$LATEST",
+            invokedFunctionArn: `arn:aws:lambda:serverless-offline:123456789012:function:${funcs[0].id}`,
+            isDefaultFunctionVersion: true,
+            logGroupName: `/aws/lambda/${funcs[0].id}`,
+            logStreamName: expect.any(String),
+            memoryLimitInMB: "1024",
+           })
     );
   });
 
@@ -258,24 +258,23 @@ describe("validate", () => {
     expect(funcs[0].events).toHaveLength(1);
 
     const event = funcs[0].events[0];
-    module._executeFunction(funcs[0].id, event.input);
+    module._buildModulePath = () => '../tests/test-handler';
+    module._executeFunction(funcs[0].id, funcs[0].moduleName, funcs[0].handlerFunction, funcs[0].timeout, event.input);
 
     expect(event.cron).toEqual("1/* * * * *");
     expect(event.input.key1).toEqual("value1");
-    expect(childProcess.execFileSync).toBeCalledWith(
-      process.argv[0],
-      [
-        process.argv[1],
-        "invoke",
-        "local",
-        "--function",
-        funcs[0].id,
-        "--data",
-        JSON.stringify(event.input),
-        "--option1",
-        "value2"
-      ],
-      {cwd: "./", stdio: "inherit" }
+    expect(testHandler.test1).toBeCalledWith(
+        event.input,
+        expect.objectContaining({
+            callbackWaitsForEmptyEventLoop: true,
+            functionName: funcs[0].id,
+            functionVersion: "$LATEST",
+            invokedFunctionArn: `arn:aws:lambda:serverless-offline:123456789012:function:${funcs[0].id}`,
+            isDefaultFunctionVersion: true,
+            logGroupName: `/aws/lambda/${funcs[0].id}`,
+            logStreamName: expect.any(String),
+            memoryLimitInMB: "1024",
+           })
     );
   });
 
@@ -300,21 +299,21 @@ describe("validate", () => {
     expect(funcs[0].events).toHaveLength(1);
 
     const event = funcs[0].events[0];
-    module._executeFunction(funcs[0].id, event.input);
+    module._buildModulePath = () => '../tests/test-handler';
+    module._executeFunction(funcs[0].id, funcs[0].moduleName, funcs[0].handlerFunction, funcs[0].timeout, event.input);
 
     expect(event.cron).toEqual("1/* * * * *");
-    expect(childProcess.execFileSync).toBeCalledWith(
-      process.argv[0],
-      [
-        process.argv[1],
-        "invoke",
-        "local",
-        "--function",
-        funcs[0].id,
-        "--data",
-        JSON.stringify(event.input)
-      ],
-      { cwd: "./", stdio: "inherit" }
+    expect(testHandler.test1).toBeCalledWith(
+       event.input, expect.objectContaining({
+        callbackWaitsForEmptyEventLoop: true,
+        functionName: "scheduled1",
+        functionVersion: "$LATEST",
+        invokedFunctionArn: "arn:aws:lambda:serverless-offline:123456789012:function:scheduled1",
+        isDefaultFunctionVersion: true,
+        logGroupName: "/aws/lambda/scheduled1",
+        logStreamName: expect.any(String),
+        memoryLimitInMB: "1024",
+       })
     );
   });
 
@@ -337,7 +336,7 @@ describe("validate", () => {
     };
 
     const funcs = module._getFuncConfigs();
-    const context = module._getContext(funcs[0]);
+    const context = module._getContext(funcs[0].id, funcs[0].timeout);
     expect(context.getRemainingTimeInMillis()).toBeLessThanOrEqual(timeout * MS_PER_SEC);
     expect(context.getRemainingTimeInMillis()).toBeGreaterThan(timeout * MS_PER_SEC - maxDuration);
   });
@@ -361,14 +360,14 @@ describe("validate", () => {
     };
 
     const funcs = module._getFuncConfigs();
-    const context = module._getContext(funcs[0]);
+    const context = module._getContext(funcs[0].id, funcs[0].timeout);
     expect(context.getRemainingTimeInMillis()).toBeLessThanOrEqual(timeout * MS_PER_SEC);
     expect(context.getRemainingTimeInMillis()).toBeGreaterThan(timeout * MS_PER_SEC - maxDuration);
   });
 
   it("should use the *default* timeout for getRemainingTimeInMillis", () => {
     const timeout = 6; // secs
-    const maxDuration = 2; // msecs
+    const maxDuration = 2.1; // msecs
 
     module.serverless.service.functions = {
       scheduled1: {
@@ -384,7 +383,7 @@ describe("validate", () => {
     };
 
     const funcs = module._getFuncConfigs();
-    const context = module._getContext(funcs[0]);
+    const context = module._getContext(funcs[0].id, funcs[0].timeout);
     expect(context.getRemainingTimeInMillis()).toBeLessThanOrEqual(timeout * MS_PER_SEC);
     expect(context.getRemainingTimeInMillis()).toBeGreaterThan(timeout * MS_PER_SEC - maxDuration);
   });
